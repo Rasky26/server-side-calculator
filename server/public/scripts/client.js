@@ -20,22 +20,6 @@ function main() {
 }
 
 
-// Function that creates an empty object
-// that stores the inputs from the basic
-// calculator inputs
-function emptyBasicCalculatorObject() {
-
-    // Set an empty object
-    let basicCalculatorInputs = {
-        inputOne: '',
-        inputTwo: '',
-        operationType: '',
-    }
-    
-    return basicCalculatorInputs
-}
-
-
 // Function that correctly flags the selected button within the
 // basic calculator form
 function setBasicCalculatorOperationActive() {
@@ -111,6 +95,28 @@ function handleBasicCalculation(e) {
         // Stop the function from continuing
         return
     }
+
+    // If valid information exists within the object, send the information
+    // to the server.js as a POST request
+    $.ajax(
+        {
+            url: "/basic-calculator",
+            method: "POST",
+            data: inputFields,
+        }
+    )
+
+        // Get the resposne information
+        .then(response => {
+            console.log(response, 'response')
+        })
+
+        // Capture the error if one occurs
+        .catch((err) => {
+            console.log('An error occurred!', err)
+        })
+
+    // console.log(response, "this was the reponse")
 
     e.preventDefault()
 }
