@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <!-- Import jQuery -->
+    <script src="./library/jQuery.js" charset="utf-8"></script>
+    <!-- Import Scripts -->
+    <script src="./scripts/client.js" charset="utf-8"></script>
+    <!-- Import Stylesheets -->
+    <link rel="stylesheet" href="./styles/styles.css">
+</head>
+<body>
+    <header>
+        <h1>Server-Side Calculator App</h1>
+    </header>
+
+    <!-- The section for the basic calculator page -->
+    <section>
+        <div id="basic-calculator-container" class="container">
+            <form id="basic-calculator" class="basic-calculator">
+                <input id="basic-calculator-value-one" class="basic-input" type="text" />
+                <label for="basic-calculator-value-one">Value One:</label>
+                <div class="operation-container">
+                    <button type="button" id="basic-multiplication" class="basic-operation" data-operator="multiplcation" data-selected="false">×</button>
+                    <button type="button" id="basic-division" class="basic-operation" data-operator="division" data-selected="false">÷</button>
+                    <button type="button" id="basic-addition" class="basic-operation" data-operator="addition" data-selected="false">+</button>
+                    <button type="button" id="basic-subtraction" class="basic-operation" data-operator="subtraction" data-selected="false">–</button>
+                </div>
+                <input id="basic-calculator-value-two" class="basic-input" type="text" />
+                <label for="basic-calculator-value-two">Value One:</label>
+                <button type="submit" id="basic-equals">=</button>
+                <button type="reset" id="basic-clear">C</button>
+            </form>
+        </div>
+    </section>
+
+</body>
+</html>
