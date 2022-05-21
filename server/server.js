@@ -20,22 +20,39 @@ app.use(bodyParser.json())
 
 // Global values
 const commPort = 5000
+let basicCalculatorHistory = []
 
 
 // --------------------------------
 // Route for posting a basic calculator request
 app.post("/basic-calculator", (req, res) => {
 
+    // Initialize the incoming object as a different variable
+    let equation = req.body
+    equation.valueOne = Number(equation.valueOne)
+    equation.valueTwo = Number(equation.valueTwo)
+
     // Send the request to the operation analyzer
-    let result = basicCalculatorParseCalculation(req.body)
+    let result = basicCalculatorParseCalculation(equation)
+
+    // Add the answer into the equation object
+    equation.answer = result
+
+    // Push the current equation into the calculator history
+    basicCalculatorHistory.push(equation)
 
     res.send(
-        { answer: result }
+        {
+            answer: result,
+            history: basicCalculatorHistory,
+        }
     )
 })
 
 
 // --------------------------------
+// ********************************
+//      MAIN LISTENER FUNCTION
 // ********************************
 // --------------------------------
 // Main listener function
@@ -56,21 +73,20 @@ function basicCalculatorParseCalculation(obj) {
 
     // Initialize the result variable
     let result;
-    const numOne = Number(obj.valueOne)
-    const numTwo = Number(obj.valueTwo)
 
+    // Identify the mathematical operation to conduct
     switch (obj.operation) {
         case 'multiplcation':
-            result = multiplcation(numOne, numTwo)
+            result = multiplcation(obj.valueOne, obj.valueTwo)
             break;
         case 'division':
-            result = division(numOne, numTwo)
+            result = division(obj.valueOne, obj.valueTwo)
             break;
         case 'addition':
-            result = addition(numOne, numTwo)
+            result = addition(obj.valueOne, obj.valueTwo)
             break;
         case 'subtraction':
-            result = subtraction(numOne, numTwo)
+            result = subtraction(obj.valueOne, obj.valueTwo)
             break;
         default:
             // Shouldn't get here
