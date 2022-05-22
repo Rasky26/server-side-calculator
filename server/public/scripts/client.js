@@ -2,12 +2,24 @@
 $(main)
 
 
+// Set global variables
+const mathNameSymbolLookUp = {
+    // Name to symbols
+    "addition": "+",
+    "subtraction": "–",
+    "multiplication": "×",
+    "division": "÷",
+
+    // Symbols to name
+    "+": "addition",
+    "–": "subtraction",
+    "×": "multiplication",
+    "÷": "division",
+}
+
 
 // Set the main container function
 function main() {
-
-    // Set the current inventory list on load
-    console.log('Initiated')
 
     // --------------------------------
     // Basic Calculator - listener functions
@@ -48,6 +60,8 @@ function setBasicCalculatorOperationActive() {
 // were provided to both buttons, gathers the information, and
 // returns the results to the DOM.
 function handleBasicCalculation(e) {
+
+    e.preventDefault()
 
     // Clean up any existing error messages that may remain on the page:
     $("#basic-calculator-missing-field").remove()
@@ -109,16 +123,14 @@ function handleBasicCalculation(e) {
         // Get the resposne information
         .then(response => {
             console.log(response, 'response')
+
+            updateSimpleCalculatorHistoryOnDom(response.history)
         })
 
         // Capture the error if one occurs
         .catch((err) => {
             console.log('An error occurred!', err)
         })
-
-    // console.log(response, "this was the reponse")
-
-    e.preventDefault()
 }
 
 
@@ -142,7 +154,29 @@ function validateAllFieldsExist(obj) {
 }
 
 
+// Function that updates the equation history on the DOM
+function updateSimpleCalculatorHistoryOnDom(historyArray) {
 
+    // Clear the current history values to the DOM
+    $("#basic-calculator-history-log").empty()
+
+    console.log(historyArray, 'historyArray')
+
+    // Loop through the history array in reverse order
+    for (i=historyArray.length-1; i>-1; i--) {
+
+        // Add the historical values back to the DOM
+        $("#basic-calculator-history-log").append(`
+            <li class="history" data-history-number="${i}">
+                <span class="history-value">${historyArray[i].valueOne}</span>
+                <span class="history-symbol">${mathNameSymbolLookUp[historyArray[i].operation]}</span>
+                <span class="history-value">${historyArray[i].valueTwo}</span>
+                <span class="history-symbol">=</span>
+                <span class="history-value history-value-answer">${historyArray[i].answer}</span>
+            </li>
+        `)
+    }
+}
 
 
 // For the advanced one: https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/key

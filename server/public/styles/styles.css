@@ -4,3 +4,20 @@
 
     background-color: lightblue;
 }
+
+#advanced-calculator-container {
+    margin: 0 auto;
+    padding-top: 4em;
+    width: 600px;
+}
+
+textarea {
+    width: 100%;
+}
+
+#advanced-calculator-body {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 6px;
+    grid-auto-rows: minmax(60px, auto);
+}

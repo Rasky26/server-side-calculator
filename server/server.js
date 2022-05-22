@@ -33,17 +33,18 @@ app.post("/basic-calculator", (req, res) => {
     equation.valueTwo = Number(equation.valueTwo)
 
     // Send the request to the operation analyzer
-    let result = basicCalculatorParseCalculation(equation)
+    let answer = basicCalculatorParseCalculation(equation)
 
     // Add the answer into the equation object
-    equation.answer = result
+    equation.answer = answer
 
     // Push the current equation into the calculator history
     basicCalculatorHistory.push(equation)
 
+    // Return the answer back to the client
     res.send(
         {
-            answer: result,
+            answer: answer,
             history: basicCalculatorHistory,
         }
     )
@@ -71,13 +72,14 @@ app.listen(commPort, () => {
 // Take in an object and parse through the results
 function basicCalculatorParseCalculation(obj) {
 
+    console.log(obj, "obj")
     // Initialize the result variable
     let result;
 
     // Identify the mathematical operation to conduct
     switch (obj.operation) {
-        case 'multiplcation':
-            result = multiplcation(obj.valueOne, obj.valueTwo)
+        case 'multiplication':
+            result = multiplication(obj.valueOne, obj.valueTwo)
             break;
         case 'division':
             result = division(obj.valueOne, obj.valueTwo)
@@ -94,15 +96,14 @@ function basicCalculatorParseCalculation(obj) {
             break;
     }
 
-    console.log(result)
-
+    // Return the result of the operations
     return result
 
 }
 
 
 // Core mathematical functions
-function multiplcation(numOne, numTwo) {
+function multiplication(numOne, numTwo) {
     return numOne * numTwo
 }
 
@@ -117,3 +118,22 @@ function addition(numOne, numTwo) {
 function subtraction(numOne, numTwo) {
     return numOne - numTwo
 }
+
+
+
+
+
+//////////////////////////////////////////////
+// ---------------------------------------- //
+//                                          //
+//      ADVANCED CALCULATOR FUNCTIONS       //
+//                                          //
+// ---------------------------------------- //
+//////////////////////////////////////////////
+
+app.post("/advanced-calculator", (req, res) => {
+
+    console.log('on the server')
+    console.log(req.body)
+    res.sendStatus(201)
+})
