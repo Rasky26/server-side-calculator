@@ -9,49 +9,19 @@ let comparitorRawInputString = '';
 let indexOfLastChange = 0;
 const validFields = "0123456789.()×÷+–*";
 
+
+// >> MAIN ENTRY POINT <<
 function advancedMain() {
 
-    console.log("In the advanced")
-
+    // Two entry-points for input on screen:
+    //
+    // 1.) Click a button on the screen
     $(".advanced-calculator-button").click(onClickCalculatorButton)
 
-    // Main listener that handles the equation input
+    // 2.) Use this listener that handles the equation input
     // for each character entered
     // REF: https://stackoverflow.com/a/19405157
-    $('#equation-input-container').on("input", "#equation-entry", formatEquationEntry)
-
-    $("#advanced-calculator-raw-input").keypress(getManuallyAddedField)
-
-    // REF: https://stackoverflow.com/a/1116253
-    $("#advanced-calculator-raw-input").keydown(getDeleteButtonPress)
-}
-
-
-// Function that handles the formatting of the input
-// field equation's characters
-function formatEquationEntry() {
-
-    // Get the value from the `input` value
-    let inputChar = this.value
-
-    console.log(inputChar)
-
-    inputChar = compareChangesToEntry(inputChar)
-
-    // Remove the current `input` field
-    $("#equation-entry").remove()
-
-    // Add in a new input field
-    $("#equation-input-container").append(`
-        <input type="text" name="equation-entry" id="equation-entry" />
-    `)
-
-    // Places the cursor at the end of the input
-    // after each entry
-    // REF: https://stackoverflow.com/a/39468577
-    $("#equation-entry").focus().val("").val(inputChar)
-
-    // $("#equation-entry")
+    $("#equation-entry").on("input", formatEquationEntry)
 }
 
 
@@ -61,18 +31,27 @@ function onClickCalculatorButton(event) {
     event.preventDefault()
 
     // Get the `data` value from that specific button
-    let inputValue = $(this).data('value')
+    let inputChar = String($(this).data('value'))
+    // Get the current input text
+    let equationString = $("#equation-entry").val()
 
-    // Ensure some strange input does not get passed,
-    // use the approved list of characters above
-    if (validFields.includes(inputValue)) {
-        currentEquation.push(String(inputValue))
-    }
+    // Add the button clicked to the `equationString`
+    equationString += inputChar
 
-    // Update the `<textarea>` with the new information
-    $("#advanced-calculator-raw-input")
-        .val('')                       // clear it
-        .val(currentEquation.join("")) // place it in, joined together
+    // Get the editted format of the equation
+    compareChangesToEntry(equationString)
+}
+
+
+// Function that handles the formatting of the input
+// field equation's characters
+function formatEquationEntry() {
+
+    // Get the value from the `input` value
+    let equationString = this.value
+
+    // Get the editted format of the equation
+    compareChangesToEntry(equationString)
 }
 
 
@@ -98,21 +77,6 @@ function getManuallyAddedField(event) {
 
     // REF: https://stackoverflow.com/a/874173
     // const keyStroke = String.fromCharCode(event.which)
-}
-
-
-// Function to capture if the `delete` button the the
-// keyboard was pressed
-function getDeleteButtonPress(event) {
-
-    // The `event.which` corresponded with "8",
-    // so purely check for that event
-    if (event.which === 8) {
-        console.log("Delete key pressed! Update string")
-    
-        // Remove the last element from the equation
-        rawInputString = $("#advanced-calculator-raw-input").val()
-    }
 }
 
 
@@ -155,18 +119,21 @@ function getEnterButtonPress(event) {
 // Function that checks for the changes that occurred
 // on the user-input string, gets the index where that
 // change occurred, and then runs the `checkForCharSwap()`
-function compareChangesToEntry(rawInputString) {
+function compareChangesToEntry(equationString) {
     
     // Loop over the current string and get char and index
-    for (let i = 0; i < rawInputString.length; i++) {
-        const char = rawInputString[i];
+    for (let i = 0; i < equationString.length; i++) {
+        const char = equationString[i];
 
         // Check for automatic character changes that
         // should be made
-        rawInputString = checkForCharSwap(char, i, rawInputString)
+        equationString = checkForCharSwap(char, i, equationString)
     }
 
-    return rawInputString
+    // Places the cursor at the end of the input
+    // after each entry
+    // REF: https://stackoverflow.com/a/39468577
+    $("#equation-entry").focus().val("").val(equationString)
 }
 
 
@@ -182,7 +149,7 @@ function checkForCharSwap(char, index, rawInputString) {
     let stringToArray = rawInputString.split('')
 
     // Test for multiplication symbol
-    if (char === "*") {
+    if ((char === "*") || (char === "×")) {
 
         console.log("in main checker")
         // Check if a `×` symbol exists at the prior
