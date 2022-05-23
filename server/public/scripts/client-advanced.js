@@ -26,9 +26,7 @@ function advancedMain() {
 
 
 // Function that handles clicking the input buttons directly.
-function onClickCalculatorButton(event) {
-
-    event.preventDefault()
+function onClickCalculatorButton() {
 
     // Get the `data` value from that specific button
     let inputChar = String($(this).data('value'))
@@ -55,44 +53,21 @@ function formatEquationEntry() {
 }
 
 
-// Function that handles typing directly into the calculator
-// window
-function getManuallyAddedField(event) {
+// Function that handles the sending the equation to the
+// server and the response
+function sendEquationToServer(equation) {
 
-    // Let the `getEnterButtonPress()` handle pressing
-    // the `=` sign
-    if (event.which === 61) {
-        getEnterButtonPress(event)
-    }
+    console.log(equation, "Look at this!")
 
-    // Get the current string input
-    rawInputString = $("#advanced-calculator-raw-input").val()
+    // event.preventDefault()
 
-    // Send the string off for comparison
-    rawInputString = compareChangesToEntry(rawInputString)
-
-    // Should update the DOM, but appears to lag behind one step
-    $("#advanced-calculator-raw-input").val('')
-    $("#advanced-calculator-raw-input").val(rawInputString)
-
-    // REF: https://stackoverflow.com/a/874173
-    // const keyStroke = String.fromCharCode(event.which)
-}
-
-
-// If the user is in the `textarea` and hits the "Enter"
-// key, treat that as hitting the "Submit" button
-function getEnterButtonPress(event) {
-
-    event.preventDefault()
-
-    // The 'event.which` corresponded with "13"
-    if ((event.which === 13) || (event.which === 61)) {
-        console.log("Enter key pressed! Add functionality")
-        console.log(`
-        ${rawInputString}
-        `)
-    }
+    // // The 'event.which` corresponded with "13"
+    // if ((event.which === 13) || (event.which === 61)) {
+    //     console.log("Enter key pressed! Add functionality")
+    //     console.log(`
+    //     ${rawInputString}
+    //     `)
+    // }
 
     // Send the equation string to the server to
     // be processed
@@ -100,7 +75,7 @@ function getEnterButtonPress(event) {
         {
             url: "/advanced-calculator",
             method: "POST",
-            data: {input: rawInputString},
+            data: {equation: equation},
         }
     )
 
@@ -116,6 +91,10 @@ function getEnterButtonPress(event) {
 }
 
 
+    // Clear the input characters
+    $("#equation-entry").val("")
+
+
 // Function that checks for the changes that occurred
 // on the user-input string, gets the index where that
 // change occurred, and then runs the `checkForCharSwap()`
@@ -128,6 +107,18 @@ function compareChangesToEntry(equationString) {
         // Check for automatic character changes that
         // should be made
         equationString = checkForCharSwap(char, i, equationString)
+    }
+
+    // If the last symbol was an `=` sign, send the equation
+    // to the server to process for results
+    if (equationString[equationString.length - 1] === "=") {
+        
+        // Remove the trailing `=` sign before sending to the server
+        equationString = equationString.substring(0, equationString.length - 1)
+
+        console.log(equationString,"equation")
+
+        sendEquationToServer(equationString)
     }
 
     // Places the cursor at the end of the input
@@ -160,7 +151,7 @@ function checkForCharSwap(char, index, rawInputString) {
 
             if (stringToArray[index - 1] === "×") {
 
-                // Replace the two multiplicaations with
+                // Replace the TWO consecutive multiplicaations with
                 // an exponential symbol
                 stringToArray.splice(index - 1, 2, "^")
             } else {
@@ -177,7 +168,7 @@ function checkForCharSwap(char, index, rawInputString) {
         stringToArray.splice(index, 1, "÷")
     }
 
-    // Swap to math symbol
+    // Swap to subtraction symbol
     if (char === "-") {
         stringToArray.splice(index, 1, "–")
     }
