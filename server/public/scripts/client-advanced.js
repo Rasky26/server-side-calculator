@@ -53,39 +53,6 @@ function formatEquationEntry() {
 }
 
 
-// Function that handles the sending the equation to the
-// server and the response
-function sendEquationToServer(equation) {
-
-    // Send the equation string to the server to
-    // be processed
-    $.ajax(
-        {
-            url: "/advanced-calculator",
-            method: "POST",
-            data: {equation: equation},
-        }
-    )
-
-        // Get the response information
-        .then (response => {
-            console.log(response, "on advanced client")
-
-            $("#answer").text(response.answer)
-
-        })
-
-        // Capture the error if one occurs
-        .catch((err) => {
-            console.log('An error occurred!', err)
-        })
-}
-
-
-    // Clear the input characters
-    $("#equation-entry").val("")
-
-
 // Function that checks for the changes that occurred
 // on the user-input string, gets the index where that
 // change occurred, and then runs the `checkForCharSwap()`
@@ -169,4 +136,34 @@ function checkForCharSwap(char, index, rawInputString) {
     rawInputString = stringToArray.join('')
     
     return rawInputString
+}
+
+
+// Function that handles the sending the equation to the
+// server and the response
+function sendEquationToServer(equation) {
+
+    // Send the equation string to the server to
+    // be processed
+    $.ajax(
+        {
+            url: "/advanced-calculator",
+            method: "POST",
+            data: {equation: equation},
+        }
+    )
+
+        // Get the response information
+        .then (response => {
+            console.log(response, "on advanced client")
+
+            $("#answer").text(response.answer)
+
+        })
+
+        // Capture the error if one occurs
+        .catch((err) => {
+            console.log('An error occurred!', err)
+        }
+    )
 }

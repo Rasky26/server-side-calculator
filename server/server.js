@@ -259,7 +259,6 @@ function reduceEquation(equation) {
                 equation = calculateAnswerFromObject(reducedValues, equation)
 
                 // Skip any of further analysis, continue the loop
-                console.log("check out line 252")
                 return equation
             }
         }
@@ -267,11 +266,25 @@ function reduceEquation(equation) {
         // Check if a valid math symbols was found
         if (validMathSymbols.join("").includes(char)) {
 
+            console.log(((char === "–") || (char === "-")), // Check if negative sign
+            (reducedValues.operation),         // Ensure an operation is already set
+            (reducedValues.secondValue === ""),
+            "!@#*(^!#%&!$!@*&!@#&^", ((char === "–") || (char === "-")) && // Check if negative sign
+            (reducedValues.operation) &&          // Ensure an operation is already set
+            (reducedValues.secondValue === "") )
+
             // ---- IF BLOCK ----
             // First, check if `reducedValues` has an `operation`
             // value already found
-            if (((char === '–') || (char === '-')) && (reducedValues.operation)) {
-
+            if (
+                
+                ((char === "–") || (char === "-")) && // Check if negative sign
+                (reducedValues.operation) &&          // Ensure an operation is already set
+                (reducedValues.secondValue === "")    // Make sure `secondValue` is blank
+            ) {
+                console.log(`
+                in 1
+                `)
                 // The current value is negative for the second value
                 reducedValues.secondValue += "-"
                 reducedValues.secondValueStartIndex = index
@@ -283,8 +296,17 @@ function reduceEquation(equation) {
             // Check if the `currentNumber` needs to be be set to negative.
             // If nothing exists on the `currentNumber` variable, then we know
             // that this first number must be negative.
-            else if (((char === '–') || (char === '-')) && (!currentNumber)) {
-
+            else if (
+                ((char === "–") || (char === "-")) &&    // Current character is minus
+                (!currentNumber) &&                      // `currentNumber` is not set
+                (!(                                      // Set a NOT operand
+                    (reducedValues.operation !== "–") || // Existing operation not minus
+                    (reducedValues.operation !== "-")
+                ))
+            ) {
+                console.log(`
+                in 2 && ${(reducedValues.operation !== "–")}, ${(reducedValues.operation !== "-")} && ${char} === ${(char === "–")} && ${(!currentNumber)}
+                `)
                 // `currentNumber` should be negative
                 currentNumber += "-"
                 reducedValues.startIndex = index
@@ -292,6 +314,7 @@ function reduceEquation(equation) {
                 // Continue with the next step in the loop
                 continue
             }
+
             // ---- END IF BLOCK ----
 
             // ---- IF BLOCK ----
@@ -354,8 +377,6 @@ function reduceEquation(equation) {
                     // Get the updated equation, with a calculation completed
                     equation = calculateAnswerFromObject(reducedValues, equation)
 
-                    console.log("Check out line 322")
-
                     return equation
                 }
             }
@@ -398,6 +419,7 @@ function reduceEquation(equation) {
 
                     // If not, set it to the current index
                     reducedValues.secondValueStartIndex = index
+
                 }
 
                 // Update the ending index value
@@ -476,7 +498,7 @@ function isValidNumberCharacter(char) {
     }
 
     // Check for negative sign
-    if (char === "–") {
+    if (char === "–" || char === "-") {
         return true
     }
 
@@ -560,6 +582,7 @@ function calculateAnswerFromObject(values, equation) {
     -----------------------------
     
     `)
+    
     return equation
 }
 
@@ -591,6 +614,7 @@ function calculateAnswer(values) {
             break
 
         case "–":
+            console.log(numOne, typeof(numOne), numTwo, typeof(numTwo))
             return numOne - numTwo
             break
 
