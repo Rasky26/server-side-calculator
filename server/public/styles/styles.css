@@ -48,4 +48,8 @@ h4 {
     width: 75%;
 }
 
-#p-message {}
+#p-message {
+    font-size: 60%;
+    font-style: italic;
+    color: hsl(0, 0%, 64%);
+}

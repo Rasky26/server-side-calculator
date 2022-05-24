@@ -191,6 +191,18 @@ function parseEquation(equation) {
         initialEquation = reducedEquation
         reducedEquation = reduceEquation(reducedEquation)
 
+        // Check if excess parenthesis need to be removed from the outside
+        // of the equation
+        if (
+            (reducedEquation[0] === "(") &&
+            (reducedEquation[reducedEquation.length - 1] === ")")
+        ) {
+
+            // Set the reducedEquation to a substring WITHOUT
+            // the excess parenthesis
+            reducedEquation = reducedEquation.substring(1, reducedEquation.length - 1)
+        }
+
     }
 
     // Once the equation can no longer be reduced, return
@@ -220,9 +232,6 @@ function reduceEquation(equation) {
 
     // Check if the starting value is a parenthesis
     if (currentNumber === "(") {
-        
-        // Raise the parenthesis level by one
-        parenthesisLevel++
 
         // Reset the `currentNumber` and `startIndex` back to blank
         currentNumber = ""
