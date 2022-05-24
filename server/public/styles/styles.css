@@ -1,0 +1,51 @@
+@import "./_reset.css";
+
+
+section {
+    margin: 2rem 2rem;
+    border: 1px solid hsl(0, 91%, 13%);
+    border-radius: 16px;
+    padding: 1em;
+}
+
+
+.selectedButton {
+
+    background-color: lightblue;
+}
+
+#basic-calculator-container,
+#advanced-calculator-container {
+    margin: 0 auto;
+    padding-top: 1em;
+    width: 600px;
+}
+
+
+#advanced-calculator-body {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 6px;
+    grid-auto-rows: minmax(60px, auto);
+}
+
+h2 {
+    text-align: center;
+}
+
+h4 {
+    text-align: center;
+    font-size: 80%;
+    color: hsl(0, 0%, 64%);
+}
+
+#equation-input-container {
+    margin-top: 32px;
+}
+
+#equation-entry {
+    padding: 6px 18px;
+    width: 75%;
+}
+
+#p-message {}

@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <!-- Import jQuery -->
+    <script src="./library/jQuery.js" charset="utf-8"></script>
+    <!-- Import Scripts -->
+    <script src="./scripts/client.js" charset="utf-8"></script>
+    <script src="./scripts/client-advanced.js" charset="utf-8"></script>
+    <!-- Import Stylesheets -->
+    <link rel="stylesheet" href="./styles/styles.css">
+</head>
+<body>
+    <header>
+        <h1>Server-Side Calculator App</h1>
+    </header>
+
+    <!-- The section for the basic calculator page -->
+    <section>
+
+        <div id="basic-calculator-container" class="container">
+            <h2>Simple Calculator</h2>
+            <form id="basic-calculator" class="basic-calculator">
+                <input id="basic-calculator-value-one" class="basic-input" type="text" required/>
+                <label for="basic-calculator-value-one">Value One:</label>
+                <div class="operation-container">
+                    <button type="button" id="basic-multiplication" class="basic-operation" data-operator="multiplication" data-selected="false">×</button>
+                    <button type="button" id="basic-division" class="basic-operation" data-operator="division" data-selected="false">÷</button>
+                    <button type="button" id="basic-addition" class="basic-operation" data-operator="addition" data-selected="false">+</button>
+                    <button type="button" id="basic-subtraction" class="basic-operation" data-operator="subtraction" data-selected="false">–</button>
+                </div>
+                <input id="basic-calculator-value-two" class="basic-input" type="text" required/>
+                <label for="basic-calculator-value-two">Value One:</label>
+                <button type="submit" id="basic-equals">=</button>
+                <button type="reset" id="basic-clear">C</button>
+            </form>
+        </div>
+
+        <div id="basic-calculator-results-container" class="container">
+            <ul id="basic-calculator-history-log">
+                <!-- Add the history of equations here -->
+            </ul>
+        </div>
+
+    </section>
+
+    <!-- The section for the advanced calculator page -->
+    <section>
+
+        <div id="advanced-calculator-container" class="container">
+            <h2>Advanced Calculator</h2>
+            <h4>Allows for keyboard entry, including parenthesis</h4>
+            <h4>Supports multiple operations -> <code>(1 / 8) * 6 + (3 / 2)</code></h4>
+            <h4>Use two consecutive <code>**</code> symbols to create an exponential symbol <code>^</code></h4>
+            <form id="advanced-calculator" class="advanced-calculator">
+
+                <div id="equation-input-container">
+                    <input type="text" name="equation-entry" id="equation-entry" value="" />
+                    <p id="p-message">Use = key or button, could not get  __enter__ working as intended</p>
+                    <p id="answer"></p>
+                </div>
+
+                <!-- <textarea id="advanced-calculator-raw-input" class="formula-text-area"></textarea> -->
+                <div id="advanced-calculator-body" class="calculator-body">
+                    <button type="button" id="7" class="advanced-calculator-button" data-value="7">7</button>
+                    <button type="button" id="8" class="advanced-calculator-button" data-value=8>8</button>
+                    <button type="button" id="9" class="advanced-calculator-button" data-value="9">9</button>
+                    <button type="button" id="division" class="advanced-calculator-button" data-value="÷">÷</button>
+                    <button type="button" id="4" class="advanced-calculator-button" data-value="4">4</button>
+                    <button type="button" id="5" class="advanced-calculator-button" data-value="5">5</button>
+                    <button type="button" id="6" class="advanced-calculator-button" data-value="6">6</button>
+                    <button type="button" id="multiplication" class="advanced-calculator-button" data-value="×">×</button>
+                    <button type="button" id="1" class="advanced-calculator-button" data-value="1">1</button>
+                    <button type="button" id="2" class="advanced-calculator-button" data-value="2">2</button>
+                    <button type="button" id="3" class="advanced-calculator-button" data-value="3">3</button>
+                    <button type="button" id="subtration" class="advanced-calculator-button" data-value="–">–</button>
+                    <button type="button" id="decimal" class="advanced-calculator-button" data-value=".">.</button>
+                    <button type="button" id="0" class="advanced-calculator-button" data-value="0">0</button>
+                    <button type="button" id="equals" class="advanced-calculator-button" data-value="=">=</button>
+                    <button type="button" id="addition" class="advanced-calculator-button" data-value="+">+</button>
+                </div>
+            </form>
+        </div>
+
+        <div id="advanced-calculator-history">
+
+        </div>
+
+    </section>
+
+</body>
+</html>
