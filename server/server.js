@@ -19,7 +19,7 @@ app.use(bodyParser.json())
 
 
 // Global values
-const commPort = 5000
+const commPort = process.env.PORT || 5000
 let basicCalculatorHistory = []
 let advancedCalculatorHistory = []
 // let validMathSymbols = "^×÷+–-"
@@ -144,6 +144,7 @@ app.post("/advanced-calculator", (req, res) => {
     // Get rid of any spaces in the equation
     // REF: https://stackoverflow.com/a/5963256
     equation = equationObject.equation.split(' ').join('')
+    equationObject.equation = equation
 
     // Run the functions to get an answer
     answer = parseEquation(equation)
@@ -582,7 +583,7 @@ function calculateAnswerFromObject(values, equation) {
     -----------------------------
     
     `)
-    
+
     return equation
 }
 

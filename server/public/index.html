@@ -22,6 +22,7 @@
     <section>
 
         <div id="basic-calculator-container" class="container">
+            <h2>Simple Calculator</h2>
             <form id="basic-calculator" class="basic-calculator">
                 <input id="basic-calculator-value-one" class="basic-input" type="text" required/>
                 <label for="basic-calculator-value-one">Value One:</label>
@@ -50,10 +51,15 @@
     <section>
 
         <div id="advanced-calculator-container" class="container">
+            <h2>Advanced Calculator</h2>
+            <h4>Allows for keyboard entry, including parenthesis</h4>
+            <h4>Supports multiple operations -> <code>(1 / 8) * 6 + (3 / 2)</code></h4>
+            <h4>Use two consecutive <code>**</code> symbols to create an exponential symbol <code>^</code></h4>
             <form id="advanced-calculator" class="advanced-calculator">
 
                 <div id="equation-input-container">
                     <input type="text" name="equation-entry" id="equation-entry" value="" />
+                    <p id="p-message">Use = key or button, could not get  __enter__ working as intended</p>
                     <p id="answer"></p>
                 </div>
 
