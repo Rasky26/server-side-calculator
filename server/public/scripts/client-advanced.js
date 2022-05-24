@@ -57,18 +57,6 @@ function formatEquationEntry() {
 // server and the response
 function sendEquationToServer(equation) {
 
-    console.log(equation, "Look at this!")
-
-    // event.preventDefault()
-
-    // // The 'event.which` corresponded with "13"
-    // if ((event.which === 13) || (event.which === 61)) {
-    //     console.log("Enter key pressed! Add functionality")
-    //     console.log(`
-    //     ${rawInputString}
-    //     `)
-    // }
-
     // Send the equation string to the server to
     // be processed
     $.ajax(
@@ -82,6 +70,9 @@ function sendEquationToServer(equation) {
         // Get the response information
         .then (response => {
             console.log(response, "on advanced client")
+
+            $("#answer").text(response.answer)
+
         })
 
         // Capture the error if one occurs
@@ -99,7 +90,10 @@ function sendEquationToServer(equation) {
 // on the user-input string, gets the index where that
 // change occurred, and then runs the `checkForCharSwap()`
 function compareChangesToEntry(equationString) {
-    
+
+    // Clear the current answer
+    $("#answer").text("")
+
     // Loop over the current string and get char and index
     for (let i = 0; i < equationString.length; i++) {
         const char = equationString[i];
@@ -115,8 +109,6 @@ function compareChangesToEntry(equationString) {
         
         // Remove the trailing `=` sign before sending to the server
         equationString = equationString.substring(0, equationString.length - 1)
-
-        console.log(equationString,"equation")
 
         sendEquationToServer(equationString)
     }

@@ -22,7 +22,8 @@ app.use(bodyParser.json())
 const commPort = 5000
 let basicCalculatorHistory = []
 let advancedCalculatorHistory = []
-let validMathSymbols = "^×÷+–"
+// let validMathSymbols = "^×÷+–-"
+let validMathSymbols = ["^", "×÷", "+–-"]
 
 
 // --------------------------------
@@ -136,10 +137,24 @@ function subtraction(numOne, numTwo) {
 app.post("/advanced-calculator", (req, res) => {
 
     console.log('on the server')
-    console.log(req.body)
 
-    answer = parseEquation(req.body.equation)
+    // Rename the `req.body` to `equation`
+    let equationObject = req.body
 
+    // Get rid of any spaces in the equation
+    // REF: https://stackoverflow.com/a/5963256
+    equation = equationObject.equation.split(' ').join('')
+
+    // Run the functions to get an answer
+    answer = parseEquation(equation)
+
+    // Add the answer to the equation object
+    equationObject.answer = answer
+
+    // Update the history
+    advancedCalculatorHistory.push(equationObject)
+
+    // Return the results to the user
     res.send({
         answer: answer,
         history: advancedCalculatorHistory,
@@ -148,18 +163,38 @@ app.post("/advanced-calculator", (req, res) => {
 
 
 // Function that takes in the raw equation and
+// repeatedly reduces it until an answer is found. Then it 
 // returns an answer to the client
 function parseEquation(equation) {
 
-    // Get rid of any spaces in the equation
-    // REF: https://stackoverflow.com/a/5963256
-    equation = equation.split(' ').join('')
+    // Set a variable to store the initial equation BEFORE processing
+    let initialEquation = equation
+    
+    // Set a variable to store the reduced equation AFTER processing
+    let reducedEquation = reduceEquation(equation)
 
-    reduceEquation(equation)
+    console.log("Initial:", initialEquation, "After:", reducedEquation)
 
-    let answer = 0
+    // Loop the reduction function repeatedly until a match between
+    // `reducedEquation` and `initialEquation` --> meaning the equation
+    // has been fully reduced
+    while (reducedEquation !== initialEquation) {
 
-    return answer
+        console.log(`
+        ============================`)
+        console.log("INIT:", initialEquation)
+        console.log("REDU:", reducedEquation)
+        console.log(`
+        ============================`)
+
+        initialEquation = reducedEquation
+        reducedEquation = reduceEquation(reducedEquation)
+
+    }
+
+    // Once the equation can no longer be reduced, return
+    // the result, which will be the answer!
+    return reducedEquation
 }
 
 
@@ -171,7 +206,7 @@ function reduceEquation(equation) {
     let reducedValues = resetCurrentCalculationObject()
 
     // Tracks the current nested parenthesis level
-    let parenthesisLevel = 0
+    // let parenthesisLevel = 0
 
     // Set storage of variable before assigning to object.
     // Initialize the `currentNumber` as the first element
@@ -179,83 +214,67 @@ function reduceEquation(equation) {
     // This will help if a number begins with a negative symbol.
     let currentNumber = equation[0]
 
+    // Set the `startIndex` to zero
+    reducedValues.startIndex = 0
+
     // Check if the starting value is a parenthesis
-    if (currentNumber === '(') {
+    if (currentNumber === "(") {
         
         // Raise the parenthesis level by one
         parenthesisLevel++
 
-        // Reset the `currentNumber` back to blank
+        // Reset the `currentNumber` and `startIndex` back to blank
         currentNumber = ""
+        reducedValues.startIndex = ''
     }
-
-    // Set boolean flag that tracks if an expression was
-    // just added to the object
-    let foundSymbol = false
 
     // Loop over the equation string, going char by char
     for (let index = 1; index < equation.length; index++) {
         const char = equation[index];
 
-        console.log(char, "This is our current char!", reducedValues, currentNumber, "<- currentNumber", validMathSymbols.includes(char))
-        
-        // Tracks the parenthesis nesting
-        // if (element === '(') {
-        //     parenthesisLevel++
-        //     maxParenthesisLevel++
-        // } else if (element == ')') {
-        //     parenthesisLevel--
-        // }
+        console.log(char, "This is our current char!", reducedValues, currentNumber, "<- currentNumber")
 
         // Check for a parenthesis, if one is found we need
         // to clear out to object as an equation of higher
         // importance is found
         if (char === "(") {
 
-            // Increment the parenthesis level
-            parenthesisLevel++
-
             // Reset the object values reducedValues = {
             reducedValues = resetCurrentCalculationObject()
 
-            // Reset the `foundSymbol` variable to `false`
-            foundSymbol = false
-        
-            console.log("Starting parenthesis", reducedValues)
             // Skip any of analysis, so continue to next iteration
             continue
         }
 
+        // Check for a closing parenthesis, meaning some equation should be run
         if (char === ")") {
 
-            // De-increment the parenthesis level
-            parenthesisLevel--
+            // Update the `endIndex` value to the previous index
+            reducedValues.endIndex = index - 1
 
             // Check if the reduced values object is full of found variables
             if (reducedValues.firstValue && reducedValues.operation && reducedValues.secondValue) {
 
-                // LATER --> DO the calculation!!
-                console.log("BUILD CLOSE () FEATURE!", reducedValues)
-
-                console.log(calculateAnswerFromObject(reducedValues), "<<<-----!!!!")
+                // Get the updated equation, now reduced
+                equation = calculateAnswerFromObject(reducedValues, equation)
 
                 // Skip any of further analysis, continue the loop
-                continue
+                console.log("check out line 252")
+                return equation
             }
         }
 
         // Check if a valid math symbols was found
-        if (validMathSymbols.includes(char)) {
+        if (validMathSymbols.join("").includes(char)) {
 
-            console.log("FOUND SYMBOL", char, "!!!")
             // ---- IF BLOCK ----
             // First, check if `reducedValues` has an `operation`
             // value already found
-            if ((char === '–') && (reducedValues.operation)) {
+            if (((char === '–') || (char === '-')) && (reducedValues.operation)) {
 
                 // The current value is negative for the second value
-                reducedValues.secondValue += char
-                foundSymbol = false
+                reducedValues.secondValue += "-"
+                reducedValues.secondValueStartIndex = index
 
                 // Continue with the next step in the loop
                 continue
@@ -264,11 +283,11 @@ function reduceEquation(equation) {
             // Check if the `currentNumber` needs to be be set to negative.
             // If nothing exists on the `currentNumber` variable, then we know
             // that this first number must be negative.
-            else if ((char === '–') && (!currentNumber)) {
+            else if (((char === '–') || (char === '-')) && (!currentNumber)) {
 
                 // `currentNumber` should be negative
-                currentNumber += char
-                foundSymbol = false
+                currentNumber += "-"
+                reducedValues.startIndex = index
 
                 // Continue with the next step in the loop
                 continue
@@ -284,26 +303,60 @@ function reduceEquation(equation) {
             // check the order of operations.
             if (reducedValues.operation) {
 
-                console.log("   WHOA,", char, ":", validMathSymbols.indexOf(char), validMathSymbols.indexOf(reducedValues.operation))
+                // Need to set the order of operation
+                //
+                // Initialize variables to hold the found indexes
+                let indexOfCurrentOperation;  // Current character in loop
+                let indexOfExistingOperation; // Existing operation in object
+                // Loop through `validMathSymbols` to get the current index
+                for (let index = 0; index < validMathSymbols.length; index++) {
+                    const operations = validMathSymbols[index];
+
+                    console.log("LOOOOK!!!", operations, operations.indexOf(char), operations.indexOf(reducedValues.operation))
+
+                    // Set the index of the current character in the loop
+                    if (operations.indexOf(char) > -1) {
+                        indexOfCurrentOperation = index
+                    }
+
+                    // Set the index of the existing operation in the object
+                    if (operations.indexOf(reducedValues.operation) > -1) {
+                        indexOfExistingOperation = index
+                    }
+                }
+
+                console.log("RESULTSL:", indexOfCurrentOperation, indexOfExistingOperation)
 
                 // Check if the current symbol is of higher importance than
                 // the current operation. Because `validMathSymbols` is set
                 // based on order-of-operation, we can just compare the index
                 // location to see which is more important.
-                if (validMathSymbols.indexOf(char) < validMathSymbols.indexOf(reducedValues.operation)) {
+                if (indexOfCurrentOperation < indexOfExistingOperation) {
 
                     // Therefore, move the the `reducedValues.secondValue` into
                     // the `firstValue` position, set the operation to the new
                     // symbol, and clear the `secondValue`
+                    reducedValues.startIndex = reducedValues.secondValueStartIndex
                     reducedValues.firstValue = reducedValues.secondValue
                     reducedValues.operation = char
                     reducedValues.secondValue = ""
-
-                    // A symbol was found, so flag this variable as `true`
-                    foundSymbol = true
+                    reducedValues.secondValueStartIndex = ""
                 
                     // Continue with the next step in the loop
                     continue
+                }
+
+                // If this operation is lesser important, then the currently stored
+                // object is set for processing, so send the `reducedValues` obj
+                // to be calculated
+                else {
+
+                    // Get the updated equation, with a calculation completed
+                    equation = calculateAnswerFromObject(reducedValues, equation)
+
+                    console.log("Check out line 322")
+
+                    return equation
                 }
             }
 
@@ -317,8 +370,6 @@ function reduceEquation(equation) {
 
                 // Clear the `currentNumber` value
                 currentNumber = ""
-
-                console.log("Moved values to obj", reducedValues, currentNumber)
 
                 // Continue with the next step in the loop
                 continue
@@ -341,26 +392,52 @@ function reduceEquation(equation) {
 
                 // Append on the current item to the `secondValue`
                 reducedValues.secondValue += char
+
+                // Check if the second value start value has been set
+                if (reducedValues.secondValueStartIndex === "") {
+
+                    // If not, set it to the current index
+                    reducedValues.secondValueStartIndex = index
+                }
+
+                // Update the ending index value
+                reducedValues.endIndex = index
             }
 
+            // Otherwise, store the `char` on the `currentNumber` variable
             else {
 
                 // Add the string into the current variable
                 currentNumber += char
+
+                // Set the starting index if not already set
+                if (reducedValues.startIndex === "") {
+
+                    // Set the starting index value
+                    reducedValues.startIndex = index
+                }
             }
-
-            console.log(currentNumber, char, "FIOUND number")
         }
-
-
     }
 
-    console.log(currentNumber, "cnumber")
+    // If the end of the equation is reached, check if further processing is needed
+    // by checking if the `firstValue` and `secondValue` are not blank
+    if (reducedValues.firstValue && reducedValues.secondValue) {
 
-    // Catch-all for the last number coming into the object
-    // reducedValues.secondValue = currentNumber
+        // Send the current object to be reduced
+        equation = calculateAnswerFromObject(reducedValues, equation)
+    }
 
-    console.log("--> FINAL::::", reducedValues)
+    console.log(`
+    
+    !!!!!!!!!!!!!!!!!!!!
+    SHOULD BE THE ANSWER
+
+    EQUATION: ${equation}
+    `)
+
+    console.log(" Send back equation")
+    return equation
 
 }
 
@@ -374,6 +451,7 @@ function resetCurrentCalculationObject() {
         startIndex: '',
         firstValue: '',
         operation: '',
+        secondValueStartIndex: '',
         secondValue: '',
         endIndex: '',
         directlyContainedInParenthesis: false,
@@ -407,7 +485,87 @@ function isValidNumberCharacter(char) {
 
 
 // Function that calculates the current object to an answer
-function calculateAnswerFromObject(values) {
+// and reduces the equation. Once reduced, re-call the `reduceEquation()`
+// function to further simplify the equation
+function calculateAnswerFromObject(values, equation) {
+
+    // Using the object that holds our current values, do math
+    // to see what that should be reduced to, called `answer`
+    const answer = calculateAnswer(values)
+
+    console.log("ANSWER!! line 462", answer)
+
+    // Check for parenthesis IMMEDIATELY surrounding the current
+    // equation
+    if (
+        // Check BEFORE the `startIndex` for a "(" symbol
+        (
+            // Validate that SOMETHING exists at the `startIndex`
+            (equation[values.startIndex - 1] !== undefined) &&
+            // And check if the symbol matches the "(" symbol
+            (equation[values.startIndex - 1] === "(")
+        ) && 
+        (
+            // Validate that SOMETHING exists after the `endIndex`
+            (equation[values.endIndex + 1] !== undefined) &&
+            // And check if that symbol matches the ")" symbol
+            (equation[values.endIndex + 1] === ")")
+        )
+    ) {
+
+        // Split the equation into an array so we can use the `splice()` function
+        let equationArray = equation.split("")
+
+        // Splice the `answer` into the `equation` in place of the
+        // existing values
+        equationArray.splice(
+            // Set the starting value
+            values.startIndex - 1,
+            // Needs to be +2 to get the closing ")" string
+            (values.endIndex + 2) - (values.startIndex - 1),
+            // Splice in the calculated `answer`
+            answer
+        )
+
+        equation = equationArray.join("")
+    }
+
+    // Otherwise there was no parenthesis, so just reduce the equation
+    else {
+
+        // Split the equation into an array so we can use the `splice()` function
+        let equationArray = equation.split("")
+
+        // Splice the `answer` into the `equation` in place of the
+        // existing values
+        equationArray.splice(
+            // Set the starting value
+            values.startIndex,
+            // Needs to be +2 to get the closing ")" string
+            (values.endIndex + 1) - (values.startIndex),
+            // Splice in the calculated `answer`
+            answer
+        )
+
+        equation = equationArray.join("")
+    }
+
+    // With the newly reduced equation, now re-call the `reduceEquation()`
+    // function to further reduce the equation.
+    // Repeat this over and over until it can no longer be reduced!
+    console.log(`
+
+    -----------------------------
+        RETURN WITH ${equation}
+    -----------------------------
+    
+    `)
+    return equation
+}
+
+
+// Function that handles the specific mathemathical operation
+function calculateAnswer(values) {
 
     // Convert the strings to numbers
     const numOne = Number(values.firstValue)
@@ -429,7 +587,6 @@ function calculateAnswerFromObject(values) {
             break
 
         case "+":
-            console.log("here?", numOne + numTwo)
             return numOne + numTwo
             break
 
