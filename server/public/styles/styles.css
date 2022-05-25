@@ -40,6 +40,7 @@ h4 {
 }
 
 #equation-input-container {
+    display: inline;
     margin-top: 32px;
 }
 
@@ -52,4 +53,15 @@ h4 {
     font-size: 60%;
     font-style: italic;
     color: hsl(0, 0%, 64%);
+}
+
+#answer-block {
+    height: 56px;
+    text-align: right;
+    padding-right: 1em;
+}
+
+#answer {
+    font-size: 226%;
+    font-weight: 200;
 }

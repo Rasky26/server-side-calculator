@@ -22,6 +22,8 @@ function advancedMain() {
     // for each character entered
     // REF: https://stackoverflow.com/a/19405157
     $("#equation-entry").on("input", formatEquationEntry)
+
+    $("#equation-entry").keypress(checkEnterKeyPressed)
 }
 
 
@@ -50,6 +52,23 @@ function formatEquationEntry() {
 
     // Get the editted format of the equation
     compareChangesToEntry(equationString)
+}
+
+
+// Check if the <enter> key was pressed while in the
+// input box
+function checkEnterKeyPressed(event) {
+
+    // Check if the keypress `which` value was `13`
+    if (event.which === 13) {
+        alert('You pressed ENTER')
+
+        // Get the input equation
+        let equationString = $("#equation-entry").val()
+
+        // Send to calculate the answer
+        sendEquationToServer(equationString)
+    }
 }
 
 
