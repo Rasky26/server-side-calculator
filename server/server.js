@@ -27,6 +27,14 @@ let validMathSymbols = ["^", "×÷", "+–-"]
 
 
 // --------------------------------
+app.get("/basic-calculator", (req, res) => {
+    res.send({
+        history: basicCalculatorHistory
+    })
+})
+
+
+// --------------------------------
 // Route for posting a basic calculator request
 app.post("/basic-calculator", (req, res) => {
 
@@ -47,8 +55,7 @@ app.post("/basic-calculator", (req, res) => {
     // Return the answer back to the client
     res.send(
         {
-            answer: answer,
-            history: basicCalculatorHistory,
+            answer: answer
         }
     )
 })
@@ -75,7 +82,6 @@ app.listen(commPort, () => {
 // Take in an object and parse through the results
 function basicCalculatorParseCalculation(obj) {
 
-    console.log(obj, "obj")
     // Initialize the result variable
     let result;
 
@@ -134,6 +140,28 @@ function subtraction(numOne, numTwo) {
 // ---------------------------------------- //
 //////////////////////////////////////////////
 
+
+// --------------------------------
+// Route to get the history of past equations
+app.get("/advanced-calculator", (req, res) => {
+
+    // Return the array of stored equations
+    res.send(advancedCalculatorHistory)
+})
+
+
+// --------------------------------
+// Route to reset the `advancedCalculatorHistory` back to empty
+app.delete("/advanced-calculator", (req, res) => {
+
+    // Reset the advanced calculator history array
+    advancedCalculatorHistory = []
+    res.sendStatus(204)
+})
+
+
+// --------------------------------
+// Route to post the current equation to for processing
 app.post("/advanced-calculator", (req, res) => {
 
     console.log('on the server')
@@ -174,19 +202,19 @@ function parseEquation(equation) {
     // Set a variable to store the reduced equation AFTER processing
     let reducedEquation = reduceEquation(equation)
 
-    console.log("Initial:", initialEquation, "After:", reducedEquation)
+    // console.log("Initial:", initialEquation, "After:", reducedEquation)
 
     // Loop the reduction function repeatedly until a match between
     // `reducedEquation` and `initialEquation` --> meaning the equation
     // has been fully reduced
     while (reducedEquation !== initialEquation) {
 
-        console.log(`
-        ============================`)
-        console.log("INIT:", initialEquation)
-        console.log("REDU:", reducedEquation)
-        console.log(`
-        ============================`)
+        // console.log(`
+        // ============================`)
+        // console.log("INIT:", initialEquation)
+        // console.log("REDU:", reducedEquation)
+        // console.log(`
+        // ============================`)
 
         initialEquation = reducedEquation
         reducedEquation = reduceEquation(reducedEquation)
@@ -242,7 +270,7 @@ function reduceEquation(equation) {
     for (let index = 1; index < equation.length; index++) {
         const char = equation[index];
 
-        console.log(char, "This is our current char!", reducedValues, currentNumber, "<- currentNumber")
+        // console.log(char, "This is our current char!", reducedValues, currentNumber, "<- currentNumber")
 
         // Check for a parenthesis, if one is found we need
         // to clear out to object as an equation of higher
@@ -276,12 +304,12 @@ function reduceEquation(equation) {
         // Check if a valid math symbols was found
         if (validMathSymbols.join("").includes(char)) {
 
-            console.log(((char === "–") || (char === "-")), // Check if negative sign
+            // console.log(((char === "–") || (char === "-")), // Check if negative sign
             (reducedValues.operation),         // Ensure an operation is already set
             (reducedValues.secondValue === ""),
-            "!@#*(^!#%&!$!@*&!@#&^", ((char === "–") || (char === "-")) && // Check if negative sign
+            ((char === "–") || (char === "-")) && // Check if negative sign
             (reducedValues.operation) &&          // Ensure an operation is already set
-            (reducedValues.secondValue === "") )
+            (reducedValues.secondValue === "") 
 
             // ---- IF BLOCK ----
             // First, check if `reducedValues` has an `operation`
@@ -292,9 +320,9 @@ function reduceEquation(equation) {
                 (reducedValues.operation) &&          // Ensure an operation is already set
                 (reducedValues.secondValue === "")    // Make sure `secondValue` is blank
             ) {
-                console.log(`
-                in 1
-                `)
+                // console.log(`
+                // in 1
+                // `)
                 // The current value is negative for the second value
                 reducedValues.secondValue += "-"
                 reducedValues.secondValueStartIndex = index
@@ -314,9 +342,9 @@ function reduceEquation(equation) {
                     (reducedValues.operation !== "-")
                 ))
             ) {
-                console.log(`
-                in 2 && ${(reducedValues.operation !== "–")}, ${(reducedValues.operation !== "-")} && ${char} === ${(char === "–")} && ${(!currentNumber)}
-                `)
+                // console.log(`
+                // in 2 && ${(reducedValues.operation !== "–")}, ${(reducedValues.operation !== "-")} && ${char} === ${(char === "–")} && ${(!currentNumber)}
+                // `)
                 // `currentNumber` should be negative
                 currentNumber += "-"
                 reducedValues.startIndex = index
@@ -345,7 +373,7 @@ function reduceEquation(equation) {
                 for (let index = 0; index < validMathSymbols.length; index++) {
                     const operations = validMathSymbols[index];
 
-                    console.log("LOOOOK!!!", operations, operations.indexOf(char), operations.indexOf(reducedValues.operation))
+                    // console.log("LOOOOK!!!", operations, operations.indexOf(char), operations.indexOf(reducedValues.operation))
 
                     // Set the index of the current character in the loop
                     if (operations.indexOf(char) > -1) {
@@ -358,7 +386,7 @@ function reduceEquation(equation) {
                     }
                 }
 
-                console.log("RESULTSL:", indexOfCurrentOperation, indexOfExistingOperation)
+                // console.log("RESULTSL:", indexOfCurrentOperation, indexOfExistingOperation)
 
                 // Check if the current symbol is of higher importance than
                 // the current operation. Because `validMathSymbols` is set
@@ -460,15 +488,15 @@ function reduceEquation(equation) {
         equation = calculateAnswerFromObject(reducedValues, equation)
     }
 
-    console.log(`
+    // console.log(`
     
-    !!!!!!!!!!!!!!!!!!!!
-    SHOULD BE THE ANSWER
+    // !!!!!!!!!!!!!!!!!!!!
+    // SHOULD BE THE ANSWER
 
-    EQUATION: ${equation}
-    `)
+    // EQUATION: ${equation}
+    // `)
 
-    console.log(" Send back equation")
+    // console.log(" Send back equation")
     return equation
 
 }
@@ -525,7 +553,7 @@ function calculateAnswerFromObject(values, equation) {
     // to see what that should be reduced to, called `answer`
     const answer = calculateAnswer(values)
 
-    console.log("ANSWER!! line 462", answer)
+    // console.log("ANSWER!! line 462", answer)
 
     // Check for parenthesis IMMEDIATELY surrounding the current
     // equation
@@ -585,13 +613,13 @@ function calculateAnswerFromObject(values, equation) {
     // With the newly reduced equation, now re-call the `reduceEquation()`
     // function to further reduce the equation.
     // Repeat this over and over until it can no longer be reduced!
-    console.log(`
+    // console.log(`
 
-    -----------------------------
-        RETURN WITH ${equation}
-    -----------------------------
+    // -----------------------------
+    //     RETURN WITH ${equation}
+    // -----------------------------
     
-    `)
+    // `)
 
     return equation
 }
@@ -624,7 +652,7 @@ function calculateAnswer(values) {
             break
 
         case "–":
-            console.log(numOne, typeof(numOne), numTwo, typeof(numTwo))
+            // console.log(numOne, typeof(numOne), numTwo, typeof(numTwo))
             return numOne - numTwo
             break
 

@@ -56,11 +56,30 @@ function setBasicCalculatorOperationActive() {
 }
 
 
+// Function that handles the GET method of past equations
+function getPastEquations() {
+    $.ajax(
+        {
+            url: "/basic-calculator",
+            method: "GET"
+        }
+    )
+    // Get the resposne information
+    .then(response => {
+
+        updateSimpleCalculatorHistoryOnDom(response.history)
+    })
+    // Capture the error if one occurs
+    .catch((err) => {
+        console.log('An error occurred!', err)
+    })
+}
+
+
 // Function that handles clicking the `=` button. Ensures values
 // were provided to both buttons, gathers the information, and
 // returns the results to the DOM.
 function handleBasicCalculation(e) {
-
     e.preventDefault()
 
     // Clean up any existing error messages that may remain on the page:
@@ -116,21 +135,18 @@ function handleBasicCalculation(e) {
         {
             url: "/basic-calculator",
             method: "POST",
-            data: inputFields,
+            data: inputFields
         }
     )
-
-        // Get the resposne information
-        .then(response => {
-            console.log(response, 'response')
-
-            updateSimpleCalculatorHistoryOnDom(response.history)
-        })
-
-        // Capture the error if one occurs
-        .catch((err) => {
-            console.log('An error occurred!', err)
-        })
+    // Get the resposne information
+    .then((response) => {
+        getPastEquations()
+    })
+    // Capture the error if one occurs
+    .catch((err) => {
+        console.log(`${err}`)
+        console.log('An error occurred!', err)
+    })
 }
 
 
